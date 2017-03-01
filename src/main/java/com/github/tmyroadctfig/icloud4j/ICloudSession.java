@@ -1,12 +1,12 @@
 package com.github.tmyroadctfig.icloud4j;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.http.client.CookieStore;
 import org.apache.http.impl.client.BasicCookieStore;
+
+import com.github.tmyroadctfig.icloud4j.util.ICloudUtils;
 
 /**
  * Serializable iCloud session.
@@ -15,7 +15,8 @@ import org.apache.http.impl.client.BasicCookieStore;
  */
 public class ICloudSession implements Serializable {
 
-	public static final long MAX_SESSION_AGE = 86400000 * 60; // two months?
+	public static final long MAX_DEFAULT_SESSION_AGE = 60000 * 5; // five mintues
+	public static final long MAX_EXTENDED_SESSION_AGE = 86400000 * 60; // two months
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,6 +27,7 @@ public class ICloudSession implements Serializable {
 	private Map<String, Object> dsInfoMap;
 	private Map<String, Object> webServiceMap;
 	private boolean hsaChallengeRequired;
+	private boolean extendedLogin;
 
 	public ICloudSession() {
 	}
@@ -55,18 +57,23 @@ public class ICloudSession implements Serializable {
 	}
 
 	public boolean isValid() {
-		return dsid != null && System.currentTimeMillis() - createdAt < MAX_SESSION_AGE;
+		return dsid != null && System.currentTimeMillis() - createdAt < getMaxSessionAge();
 	}
 
-	public void setLoginInfo(Map<String, Object> loginInfo) {
+	public boolean isExtendedLogin() {
+		return extendedLogin;
+	}
+	
+	public void setLoginInfo(Map<String, Object> loginInfo, boolean extendedLogin) {
 
 		this.createdAt = System.currentTimeMillis();
+		this.extendedLogin = extendedLogin;
 
-		dsInfoMap = stringifyMap(loginInfo.get("dsInfo"));
+		dsInfoMap = ICloudUtils.stringifyMap(loginInfo.get("dsInfo"));
 		if(dsInfoMap == null)
 			throw new ICloudException("iCloud authentication failed");
 
-		webServiceMap = stringifyMap(loginInfo.get("webservices"));
+		webServiceMap = ICloudUtils.stringifyMap(loginInfo.get("webservices"));
 		if(webServiceMap == null)
 			throw new ICloudException("iCloud authentication failed");
 
@@ -86,27 +93,10 @@ public class ICloudSession implements Serializable {
 		return dsInfoMap;
 	}
 
-	private Map<String,Object> stringifyMap(Object map) {
-
-		if(map == null)
-			return null;
-
-		@SuppressWarnings("unchecked")
-		Map<String,Object> m = (Map<String,Object>)map;
-		Map<String,Object> t = new HashMap<String,Object>();
-		for(Entry<String, Object> entry : m.entrySet()) {
-			String key = entry.getKey();
-			Object value = entry.getValue();
-			if(value instanceof String)
-				t.put(key, (String)value);
-			else if(value instanceof Map)
-				t.put(key, stringifyMap(value));
-			else 
-				t.put(key, value.toString());
-		}
-		return t;
+	private long getMaxSessionAge() {
+		return extendedLogin ? MAX_EXTENDED_SESSION_AGE : MAX_DEFAULT_SESSION_AGE;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "ICloudSession [clientId=" + clientId + ", dsid=" + dsid + ", createdAt=" + createdAt + "]";

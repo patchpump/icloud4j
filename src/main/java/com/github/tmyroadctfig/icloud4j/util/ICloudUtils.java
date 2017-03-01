@@ -32,7 +32,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * iCloud utilities.
@@ -107,7 +109,28 @@ public class ICloudUtils {
 	public static <T> T fromJson(String s, Type type) {
 		return gson.<T> fromJson(s, type);
 	}
-	
+
+	public static Map<String,Object> stringifyMap(Object map) {
+
+		if(map == null || !(map instanceof Map))
+			return null;
+
+		@SuppressWarnings("unchecked")
+		Map<String,Object> m = (Map<String,Object>)map;
+		Map<String,Object> t = new HashMap<String,Object>();
+		for(Entry<String, Object> entry : m.entrySet()) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			if(value instanceof String)
+				t.put(key, (String)value);
+			else if(value instanceof Map)
+				t.put(key, stringifyMap(value));
+			else 
+				t.put(key, value.toString());
+		}
+		return t;
+	}
+
 	private static class CookieInstanceCreator implements InstanceCreator<Cookie> {
 
 		@Override

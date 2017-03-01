@@ -136,7 +136,20 @@ public class ICloudService implements java.io.Closeable {
 	 * @return the map of values returned by iCloud.
 	 */
 	public Map<String, Object> authenticate(String username, char[] password) {
-		Map<String, Object> params = ImmutableMap.of("apple_id", username, "password", new String(password), "extended_login", true);
+		return authenticate(username, password, false);
+	}
+
+	/**
+	 * Attempts to log in to iCloud. Allows requesting a longer global session (remember me).
+	 *
+	 * @param username the username.
+	 * @param password the password.
+	 * @param extendedLogin true to request longer global session
+	 * 
+	 * @return the map of values returned by iCloud.
+	 */
+	public Map<String, Object> authenticate(String username, char[] password, boolean extendedLogin) {
+		Map<String, Object> params = ImmutableMap.of("apple_id", username, "password", new String(password), "extended_login", extendedLogin);
 		return authenticate(params);
 	}
 
@@ -161,7 +174,7 @@ public class ICloudService implements java.io.Closeable {
 				Object error = result.get("error");
 				if (error != null)
 					throw new RuntimeException("failed to log into iCloud: " + result.get("error"));
-				session.setLoginInfo(result);
+				session.setLoginInfo(result, Boolean.TRUE.equals(params.get("extended_login")));
 				return result;
 			}
 		} catch (Exception e) {
