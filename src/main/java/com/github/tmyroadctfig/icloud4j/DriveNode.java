@@ -37,132 +37,120 @@ import java.util.Map;
  *
  * @author Luke Quinane
  */
-public class DriveNode
-{
-    /**
-     * The iCloud service.
-     */
-    private final ICloudService iCloudService;
+public class DriveNode {
+	/**
+	 * The iCloud service.
+	 */
+	private final ICloudService iCloudService;
 
-    /**
-     * The drive service.
-     */
-    private final DriveService driveService;
+	/**
+	 * The drive service.
+	 */
+	private final DriveService driveService;
 
-    /**
-     * The node ID.
-     */
-    private final String id;
+	/**
+	 * The node ID.
+	 */
+	private final String id;
 
-    /**
-     * The node details.
-     */
-    private final DriveNodeDetails nodeDetails;
+	/**
+	 * The node details.
+	 */
+	private final DriveNodeDetails nodeDetails;
 
-    /**
-     * The download token.
-     */
-    private final String downloadUrlToken;
+	/**
+	 * The download token.
+	 */
+	private final String downloadUrlToken;
 
-    /**
-     * Creates a new node.
-     *
-     * @param iCloudService the iCloud service.
-     * @param driveService the service reference.
-     * @param id the ID.
-     * @param nodeDetails the node details.
-     */
-    public DriveNode(ICloudService iCloudService, DriveService driveService, String id, DriveNodeDetails nodeDetails)
-    {
-        this.iCloudService = iCloudService;
-        this.driveService = driveService;
-        this.id = id;
-        this.nodeDetails = nodeDetails;
+	/**
+	 * Creates a new node.
+	 *
+	 * @param iCloudService the iCloud service.
+	 * @param driveService the service reference.
+	 * @param id the ID.
+	 * @param nodeDetails the node details.
+	 */
+	public DriveNode(ICloudService iCloudService, DriveService driveService, String id, DriveNodeDetails nodeDetails) {
+		this.iCloudService = iCloudService;
+		this.driveService = driveService;
+		this.id = id;
+		this.nodeDetails = nodeDetails;
 
-        String rawDownloadUrlToken = iCloudService
-            .getCookieStore()
-            .getCookies()
-            .stream()
-            .filter(cookie -> "X-APPLE-WEBAUTH-VALIDATE".equals(cookie.getName()))
-            .map(Cookie::getValue)
-            .findFirst()
-            .orElse("");
+		String rawDownloadUrlToken = iCloudService.getCookieStore().getCookies().stream()
+			.filter(cookie -> "X-APPLE-WEBAUTH-VALIDATE".equals(cookie.getName())).map(Cookie::getValue).findFirst()
+			.orElse("");
 
-        // E.g. "v=2:t=AQAAAABXzO24CYflBW2JwysxyUEL9KxRNoEX1Qk~"
-        Map<String, String> authMap = Splitter.on(":").omitEmptyStrings().trimResults().withKeyValueSeparator("=").split(rawDownloadUrlToken);
-        downloadUrlToken = authMap.get("t");
-    }
+		// E.g. "v=2:t=AQAAAABXzO24CYflBW2JwysxyUEL9KxRNoEX1Qk~"
+		Map<String, String> authMap = Splitter.on(":").omitEmptyStrings().trimResults().withKeyValueSeparator("=")
+			.split(rawDownloadUrlToken);
+		downloadUrlToken = authMap.get("t");
+	}
 
-    /**
-     * Gets the children for this node.
-     *
-     * @return the children.
-     */
-    public List<DriveNode> getChildren()
-    {
-        return driveService.getChildren(id);
-    }
+	/**
+	 * Gets the children for this node.
+	 *
+	 * @return the children.
+	 */
+	public List<DriveNode> getChildren() {
+		return driveService.getChildren(id);
+	}
 
-    /**
-     * Downloads the file data for the item into the given output stream.
-     *
-     * @param outputStream the output stream to write to.
-     */
-    public void downloadFileData(OutputStream outputStream)
-    {
-        try
-        {
-            URIBuilder uriBuilder = new URIBuilder(String.format("%s/ws/%s/download/by_id", driveService.getDocsServiceUrl(), nodeDetails.zone));
-            iCloudService.populateUriParameters(uriBuilder);
-            uriBuilder.addParameter("clientMasteringNumber", "14E45");
-            uriBuilder.addParameter("document_id", Iterables.getLast(Splitter.on(":").splitToList(id)));
-            uriBuilder.addParameter("token", downloadUrlToken);
-            URI contentUrlLookupUrl = uriBuilder.build();
+	/**
+	 * Downloads the file data for the item into the given output stream.
+	 *
+	 * @param outputStream the output stream to write to.
+	 */
+	public void downloadFileData(OutputStream outputStream) {
+		try {
+			URIBuilder uriBuilder = new URIBuilder(
+				String.format("%s/ws/%s/download/by_id", driveService.getDocsServiceUrl(), nodeDetails.zone));
+			iCloudService.populateUriParameters(uriBuilder);
+			uriBuilder.addParameter("clientMasteringNumber", "14E45");
+			uriBuilder.addParameter("document_id", Iterables.getLast(Splitter.on(":").splitToList(id)));
+			uriBuilder.addParameter("token", downloadUrlToken);
+			URI contentUrlLookupUrl = uriBuilder.build();
 
-            // Get the download URL for the item
-            HttpGet contentUrlGetRequest = new HttpGet(contentUrlLookupUrl);
-            iCloudService.populateRequestHeadersParameters(contentUrlGetRequest);
+			// Get the download URL for the item
+			HttpGet contentUrlGetRequest = new HttpGet(contentUrlLookupUrl);
+			iCloudService.populateRequestHeadersParameters(contentUrlGetRequest);
 
-            Map<String, Object> result = iCloudService.getHttpClient().execute(contentUrlGetRequest, new JsonToMapResponseHandler());
-            Map<String, Object> dataTokenMap = (Map<String, Object>) result.get("data_token");
+			Map<String, Object> result = iCloudService.getHttpClient().execute(contentUrlGetRequest, new JsonToMapResponseHandler());
+			@SuppressWarnings("unchecked")
+			Map<String, Object> dataTokenMap = (Map<String, Object>) result.get("data_token");
 
-            String contentUrl = (String) dataTokenMap.get("url");
-            HttpGet contentRequest = new HttpGet(contentUrl);
+			String contentUrl = (String) dataTokenMap.get("url");
+			HttpGet contentRequest = new HttpGet(contentUrl);
 
-            try (InputStream inputStream = iCloudService.getHttpClient().execute(contentRequest).getEntity().getContent())
-            {
-                IOUtils.copyLarge(inputStream, outputStream, new byte[0x10000]);
-            }
-        }
-        catch (Exception e)
-        {
-            throw Throwables.propagate(e);
-        }
-    }
+			try (InputStream inputStream = iCloudService.getHttpClient().execute(contentRequest).getEntity()
+				.getContent()) {
+				IOUtils.copyLarge(inputStream, outputStream, new byte[0x10000]);
+			}
+		} catch (Exception e) {
+			throw Throwables.propagate(e);
+		}
+	}
 
-    /**
-     * Gets the type.
-     *
-     * @return the type.
-     */
-    public String getType()
-    {
-        return nodeDetails.type;
-    }
+	/**
+	 * Gets the type.
+	 *
+	 * @return the type.
+	 */
+	public String getType() {
+		return nodeDetails.type;
+	}
 
-    /**
-     * Gets the node details.
-     *
-     * @return th details.
-     */
-    public DriveNodeDetails getNodeDetails()
-    {
-        return nodeDetails;
-    }
+	/**
+	 * Gets the node details.
+	 *
+	 * @return th details.
+	 */
+	public DriveNodeDetails getNodeDetails() {
+		return nodeDetails;
+	}
 
-    @Override
-    public String toString()
-    {
-        return String.format("drv-node:[%s %s '%s']", id, nodeDetails.type, nodeDetails.name);
-    }
+	@Override
+	public String toString() {
+		return String.format("drv-node:[%s %s '%s']", id, nodeDetails.type, nodeDetails.name);
+	}
 }

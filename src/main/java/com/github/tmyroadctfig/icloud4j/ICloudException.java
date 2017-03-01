@@ -30,65 +30,66 @@ import java.util.stream.Collectors;
  *
  * @author Luke Quinanne
  */
-public class ICloudException extends RuntimeException
-{
-    /**
-     * The map of error values returned by iCloud.
-     */
-    private final Map<String, Object> errorMap;
+public class ICloudException extends RuntimeException {
 
-    /**
-     * The HTTP headers.
-     */
-    private final Map<String, String> headers;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * The status line.
-     */
-    private final StatusLine statusLine;
+	/**
+	 * The map of error values returned by iCloud.
+	 */
+	private Map<String, Object> errorMap;
 
-    /**
-     * Creates a new exception wrapping the original cause.
-     *
-     * @param response the HTTP response.
-     * @param errorMap the map of error values returned by iCloud.
-     */
-    public ICloudException(HttpResponse response, Map<String, Object> errorMap)
-    {
-        this.errorMap = ImmutableMap.copyOf(errorMap);
-        this.statusLine = response.getStatusLine();
-        this.headers = Arrays
-            .stream(response.getAllHeaders())
-            .collect(Collectors.toMap(Header::getName, Header::getValue));
-    }
+	/**
+	 * The HTTP headers.
+	 */
+	private Map<String, String> headers;
 
-    /**
-     * Gets the map of error values returned by iCloud.
-     *
-     * @return the map.
-     */
-    public Map<String, Object> getErrorMap()
-    {
-        return errorMap;
-    }
+	/**
+	 * The status line.
+	 */
+	private StatusLine statusLine;
 
-    /**
-     * Gets the HTTP headers.
-     *
-     * @return the headers.
-     */
-    public Map<String, String> getHeaders()
-    {
-        return headers;
-    }
+	/**
+	 * Creates a new exception wrapping the original cause.
+	 *
+	 * @param response the HTTP response.
+	 * @param errorMap the map of error values returned by iCloud.
+	 */
+	public ICloudException(HttpResponse response, Map<String, Object> errorMap) {
+		this.errorMap = ImmutableMap.copyOf(errorMap);
+		this.statusLine = response.getStatusLine();
+		this.headers = Arrays.stream(response.getAllHeaders())
+			.collect(Collectors.toMap(Header::getName, Header::getValue));
+	}
 
-    /**
-     * Gets the status line.
-     *
-     * @return the status line.
-     */
-    public StatusLine getStatusLine()
-    {
-        return statusLine;
-    }
+	public ICloudException(String message) {
+		super(message);
+	}
+
+	/**
+	 * Gets the map of error values returned by iCloud.
+	 *
+	 * @return the map.
+	 */
+	public Map<String, Object> getErrorMap() {
+		return errorMap;
+	}
+
+	/**
+	 * Gets the HTTP headers.
+	 *
+	 * @return the headers.
+	 */
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+
+	/**
+	 * Gets the status line.
+	 *
+	 * @return the status line.
+	 */
+	public StatusLine getStatusLine() {
+		return statusLine;
+	}
 }

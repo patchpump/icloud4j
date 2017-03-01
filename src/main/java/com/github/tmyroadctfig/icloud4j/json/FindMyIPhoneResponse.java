@@ -21,10 +21,9 @@ package com.github.tmyroadctfig.icloud4j.json;
  *
  * @author Luke Quinane
  */
-public class FindMyIPhoneResponse
-{
-    /**
-     * The list of Apple devices returned in the response.
-     */
-    public AppleDevice[] content;
+public class FindMyIPhoneResponse {
+	/**
+	 * The list of Apple devices returned in the response.
+	 */
+	public AppleDevice[] content;
 }

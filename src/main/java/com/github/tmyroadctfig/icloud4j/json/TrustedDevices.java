@@ -21,10 +21,9 @@ package com.github.tmyroadctfig.icloud4j.json;
  *
  * @author Luke Quinane
  */
-public class TrustedDevices
-{
-    /**
-     * The list of trusted devices.
-     */
-    public TrustedDevice[] devices;
+public class TrustedDevices {
+	/**
+	 * The list of trusted devices.
+	 */
+	public TrustedDevice[] devices;
 }

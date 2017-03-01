@@ -6,3 +6,9 @@
 /.idea/uiDesigner.xml
 /icloud4j.iws
 /gradle.properties
+/target/
+/bin/
+/.settings/
+/.classpath
+/.project
+/session.ser

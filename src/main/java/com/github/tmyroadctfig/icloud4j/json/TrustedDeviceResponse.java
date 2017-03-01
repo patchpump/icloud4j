@@ -21,12 +21,11 @@ package com.github.tmyroadctfig.icloud4j.json;
  *
  * @author Luke Quinane
  */
-public class TrustedDeviceResponse extends TrustedDevice
-{
-    /**
-     * The two-factor verification code.
-     */
-    public String verificationCode;
+public class TrustedDeviceResponse extends TrustedDevice {
+	/**
+	 * The two-factor verification code.
+	 */
+	public String verificationCode;
 
-    public boolean trustBrowser;
+	public boolean trustBrowser;
 }

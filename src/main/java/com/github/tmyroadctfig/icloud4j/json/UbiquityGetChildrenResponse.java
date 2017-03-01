@@ -21,10 +21,9 @@ package com.github.tmyroadctfig.icloud4j.json;
  *
  * @author Luke Quinane
  */
-public class UbiquityGetChildrenResponse
-{
-    /**
-     * The list of children.
-     */
-    public UbiquityNodeDetails[] item_list;
+public class UbiquityGetChildrenResponse {
+	/**
+	 * The list of children.
+	 */
+	public UbiquityNodeDetails[] item_list;
 }

@@ -19,10 +19,9 @@ package com.github.tmyroadctfig.icloud4j.json;
 /**
  * A response from the photos service returning albums.
  */
-public class PhotosAlbumsResponse
-{
-    /**
-     * The list of folders returned in the response.
-     */
-    public PhotosFolder[] folders;
+public class PhotosAlbumsResponse {
+	/**
+	 * The list of folders returned in the response.
+	 */
+	public PhotosFolder[] folders;
 }

@@ -16,57 +16,66 @@
 
 package com.github.tmyroadctfig.icloud4j.json;
 
+import java.util.Arrays;
+
 /**
  * Details for a drive node.
  *
  * @author Luke Quinane
  */
-public class DriveNodeDetails
-{
-    /**
-     * The drive webservice ID. E.g. "FOLDER::com.apple.CloudDocs::8DA00FC2-2FA3-4CC4-8039-12C6D2E6ACDC"
-     */
-    public String drivewsid;
+public class DriveNodeDetails {
+	/**
+	 * The drive webservice ID. E.g. "FOLDER::com.apple.CloudDocs::8DA00FC2-2FA3-4CC4-8039-12C6D2E6ACDC"
+	 */
+	public String drivewsid;
 
-    /**
-     * The docs webservice ID.
-     */
-    public String docwsid;
+	/**
+	 * The docs webservice ID.
+	 */
+	public String docwsid;
 
-    /**
-     * The drive webservice parent ID.
-     */
-    public String parentId;
+	/**
+	 * The drive webservice parent ID.
+	 */
+	public String parentId;
 
-    /**
-     * The zone, e.g "com.apple.CloudDocs"
-     */
-    public String zone;
+	/**
+	 * The zone, e.g "com.apple.CloudDocs"
+	 */
+	public String zone;
 
-    /**
-     * The item name.
-     */
-    public String name;
+	/**
+	 * The item name.
+	 */
+	public String name;
 
-    public String etag;
+	public String etag;
 
-    /**
-     * The item type, e.g. "FOLDER".
-     */
-    public String type;
+	/**
+	 * The item type, e.g. "FOLDER".
+	 */
+	public String type;
 
-    /**
-     * The child items.
-     */
-    public DriveNodeDetails[] items;
+	/**
+	 * The child items.
+	 */
+	public DriveNodeDetails[] items;
 
-    /**
-     * The number of child items.
-     */
-    public int numberOfItems;
+	/**
+	 * The number of child items.
+	 */
+	public int numberOfItems;
 
-    public String dateModified;
-    public String dateChanged;
-    public long size;
-    public String extension;
+	public String dateModified;
+	public String dateChanged;
+	public long size;
+	public String extension;
+
+	@Override
+	public String toString() {
+		return "DriveNodeDetails [drivewsid=" + drivewsid + ", docwsid=" + docwsid + ", parentId=" + parentId
+			+ ", zone=" + zone + ", name=" + name + ", etag=" + etag + ", type=" + type + ", items="
+			+ Arrays.toString(items) + ", numberOfItems=" + numberOfItems + ", dateModified=" + dateModified
+			+ ", dateChanged=" + dateChanged + ", size=" + size + ", extension=" + extension + "]";
+	}
 }

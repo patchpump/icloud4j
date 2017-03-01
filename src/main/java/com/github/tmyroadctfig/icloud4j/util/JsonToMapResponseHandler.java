@@ -16,18 +16,16 @@
 
 package com.github.tmyroadctfig.icloud4j.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ResponseHandler;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -36,30 +34,21 @@ import java.util.Map;
  * @author Nick DS (me@nickdsantos.com)
  * @author Luke Quinane
  */
-public class JsonToMapResponseHandler implements ResponseHandler<Map<String,Object>>
-{
-    /**
-     * The logger.
-     */
-    private static final Logger logger = Logger.getLogger(JsonToMapResponseHandler.class);
+public class JsonToMapResponseHandler implements ResponseHandler<Map<String, Object>> {
 
-    @Override
-    public Map<String, Object> handleResponse(HttpResponse response) throws IOException
-    {
-        StatusLine statusLine = response.getStatusLine();
-        if (logger.isDebugEnabled())
-        {
-            logger.debug("code: " + statusLine.getStatusCode() + "; reason: " + statusLine.getReasonPhrase());
-        }
+	private static final Logger logger = LoggerFactory.getLogger(JsonToMapResponseHandler.class);
 
-        HttpEntity respEntity = response.getEntity();
-        if (respEntity != null)
-        {
-            Gson gson = new GsonBuilder().create();
-            Reader reader = new InputStreamReader(respEntity.getContent(), Charset.forName("UTF-8"));
-            return gson.<Map<String, Object>>fromJson(reader, Map.class);
-        }
+	@Override
+	public Map<String, Object> handleResponse(HttpResponse response) throws IOException {
+		StatusLine statusLine = response.getStatusLine();
+		if (logger.isDebugEnabled())
+			logger.debug("code: " + statusLine.getStatusCode() + "; reason: " + statusLine.getReasonPhrase());
 
-        return null;
-    }
+		HttpEntity respEntity = response.getEntity();
+		if (respEntity == null)
+			return null;
+
+		Reader reader = new InputStreamReader(respEntity.getContent(), "UTF-8");
+		return ICloudUtils.gson.<Map<String, Object>> fromJson(reader, Map.class);
+	}
 }

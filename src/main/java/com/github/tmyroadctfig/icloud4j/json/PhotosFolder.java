@@ -16,36 +16,46 @@
 
 package com.github.tmyroadctfig.icloud4j.json;
 
+import java.util.Arrays;
+
 /**
  * A folder in the photos service.
  */
-public class PhotosFolder
-{
-    public String keyAssetClientId;
+public class PhotosFolder {
 
-    /**
-     * The contents type, e.g. "folder", "asset".
-     */
-    public String contentsType;
+	public String keyAssetClientId;
 
-    public String dateRange;
+	/**
+	 * The contents type, e.g. "folder", "asset".
+	 */
+	public String contentsType;
 
-    public String childAssetsBinaryFeed;
+	public String dateRange;
 
-    /**
-     * The child folder IDs.
-     */
-    public String[] childFolderIds;
+	public String childAssetsBinaryFeed;
 
-    /**
-     * The type, e.g. "folder", "album".
-     */
-    public String type;
+	/**
+	 * The child folder IDs.
+	 */
+	public String[] childFolderIds;
 
-    /**
-     * The server ID, e.g. "all-photos", "deleted-photos".
-     */
-    public String serverId;
+	/**
+	 * The type, e.g. "folder", "album".
+	 */
+	public String type;
 
-    public boolean isServerGenerated;
+	/**
+	 * The server ID, e.g. "all-photos", "deleted-photos".
+	 */
+	public String serverId;
+
+	public boolean isServerGenerated;
+
+	@Override
+	public String toString() {
+		return "PhotosFolder [keyAssetClientId=" + keyAssetClientId + ", contentsType=" + contentsType + ", dateRange="
+			+ dateRange + ", childAssetsBinaryFeed=" + childAssetsBinaryFeed + ", childFolderIds="
+			+ Arrays.toString(childFolderIds) + ", type=" + type + ", serverId=" + serverId + ", isServerGenerated="
+			+ isServerGenerated + "]";
+	}
 }

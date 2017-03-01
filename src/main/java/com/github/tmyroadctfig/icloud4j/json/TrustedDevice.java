@@ -21,31 +21,29 @@ package com.github.tmyroadctfig.icloud4j.json;
  *
  * @author Luke Quinane
  */
-public class TrustedDevice
-{
-    /**
-     * The device type, e.g. "SMS".
-     */
-    public String deviceType;
+public class TrustedDevice {
+	/**
+	 * The device type, e.g. "SMS".
+	 */
+	public String deviceType;
 
-    /**
-     * The area code.
-     */
-    public String areaCode;
+	/**
+	 * The area code.
+	 */
+	public String areaCode;
 
-    /**
-     * The obfuscated phone number. E.g. "*******00".
-     */
-    public String phoneNumber;
+	/**
+	 * The obfuscated phone number. E.g. "*******00".
+	 */
+	public String phoneNumber;
 
-    /**
-     * The device ID, e.g. "1".
-     */
-    public String deviceId;
+	/**
+	 * The device ID, e.g. "1".
+	 */
+	public String deviceId;
 
-    @Override
-    public String toString()
-    {
-        return String.format("[%s] %s: (%s) %s", deviceId, deviceType, areaCode, phoneNumber);
-    }
+	@Override
+	public String toString() {
+		return String.format("[%s] %s: (%s) %s", deviceId, deviceType, areaCode, phoneNumber);
+	}
 }

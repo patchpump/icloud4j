@@ -18,9 +18,9 @@ package com.github.tmyroadctfig.icloud4j;
 
 import com.github.tmyroadctfig.icloud4j.json.PhotosAlbumsResponse;
 import com.github.tmyroadctfig.icloud4j.json.PhotosFolder;
+import com.github.tmyroadctfig.icloud4j.util.ICloudUtils;
 import com.github.tmyroadctfig.icloud4j.util.StringResponseHandler;
 import com.google.common.base.Throwables;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -36,124 +36,104 @@ import java.util.stream.Collectors;
  *
  * @author Luke Quinane
  */
-public class PhotosService
-{
-    /**
-     * The iCloud service.
-     */
-    private final ICloudService iCloudService;
+public class PhotosService {
+	/**
+	 * The iCloud service.
+	 */
+	private final ICloudService iCloudService;
 
-    /**
-     * The service root URL.
-     */
-    private final String serviceRoot;
+	/**
+	 * The service root URL.
+	 */
+	private final String serviceRoot;
 
-    /**
-     * The service end point.
-     */
-    private final String endPoint;
+	/**
+	 * The service end point.
+	 */
+	private final String endPoint;
 
-    /**
-     * The sync token.
-     */
-    private final String syncToken;
+	/**
+	 * The sync token.
+	 */
+	private final String syncToken;
 
-    /**
-     * Creates a new photos service.
-     *
-     * @param iCloudService the iCloud service.
-     */
-    public PhotosService(ICloudService iCloudService)
-    {
-        this.iCloudService = iCloudService;
-        Map<String, Object> photosSettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("photos");
-        serviceRoot = (String) photosSettings.get("url");
+	/**
+	 * Creates a new photos service.
+	 *
+	 * @param iCloudService the iCloud service.
+	 */
+	public PhotosService(ICloudService iCloudService) {
+		this.iCloudService = iCloudService;
+		@SuppressWarnings("unchecked")
+		Map<String, Object> photosSettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("photos");
+		serviceRoot = (String) photosSettings.get("url");
 
-        endPoint = serviceRoot + "/ph";
+		endPoint = serviceRoot + "/ph";
 
-        syncToken = getSyncToken();
-    }
+		syncToken = getSyncToken();
+	}
 
-    /**
-     * Gets the sync token.
-     *
-     * @return the sync token.
-     */
-    private String getSyncToken()
-    {
-        try
-        {
-            URIBuilder uriBuilder = new URIBuilder(endPoint + "/startup");
-            iCloudService.populateUriParameters(uriBuilder);
-            HttpGet httpGet = new HttpGet(uriBuilder.build());
-            iCloudService.populateRequestHeadersParameters(httpGet);
+	/**
+	 * Gets the sync token.
+	 *
+	 * @return the sync token.
+	 */
+	private String getSyncToken() {
+		try {
+			URIBuilder uriBuilder = new URIBuilder(endPoint + "/startup");
+			iCloudService.populateUriParameters(uriBuilder);
+			HttpGet httpGet = new HttpGet(uriBuilder.build());
+			iCloudService.populateRequestHeadersParameters(httpGet);
 
-            String rawResponse = iCloudService.getHttpClient().execute(httpGet, new StringResponseHandler());
+			String rawResponse = iCloudService.getHttpClient().execute(httpGet, new StringResponseHandler());
 
-            Type type = new TypeToken<Map<String, String>>(){}.getType();
-            Map<String, Object> responseMap = new Gson().fromJson(rawResponse, type);
+			Type type = new TypeToken<Map<String, String>>() {}.getType();
+			Map<String, Object> responseMap = ICloudUtils.fromJson(rawResponse, type);
 
-            return (String) responseMap.get("syncToken");
-        }
-        catch (Exception e)
-        {
-            throw Throwables.propagate(e);
-        }
-    }
+			return (String) responseMap.get("syncToken");
+		} catch (Exception e) {
+			throw Throwables.propagate(e);
+		}
+	}
 
-    /**
-     * Populates the URI parameters for a request.
-     *
-     * @param uriBuilder the URI builder.
-     */
-    public void populateUriParameters(URIBuilder uriBuilder)
-    {
-        uriBuilder
-            .addParameter("dsid", iCloudService.getSessionId())
-            .addParameter("clientBuildNumber", "14E45")
-            .addParameter("clientInstanceId", iCloudService.getClientId())
-            .addParameter("syncToken", syncToken);
-    }
+	/**
+	 * Populates the URI parameters for a request.
+	 *
+	 * @param uriBuilder the URI builder.
+	 */
+	public void populateUriParameters(URIBuilder uriBuilder) {
+		uriBuilder.addParameter("dsid", iCloudService.getSessionId()).addParameter("clientBuildNumber", "14E45")
+			.addParameter("clientInstanceId", iCloudService.getClientId()).addParameter("syncToken", syncToken);
+	}
 
-    /**
-     * Gets the all-photos album.
-     *
-     * @return the album.
-     */
-    public PhotosFolder getAllPhotosAlbum()
-    {
-        return getAlbums()
-            .stream()
-            .filter(folder -> "all-photos".equals(folder.serverId))
-            .findFirst()
-            .get();
-    }
+	/**
+	 * Gets the all-photos album.
+	 *
+	 * @return the album.
+	 */
+	public PhotosFolder getAllPhotosAlbum() {
+		return getAlbums().stream().filter(folder -> "all-photos".equals(folder.serverId)).findFirst().get();
+	}
 
-    /**
-     * Gets a list of albums.
-     *
-     * @return the list of albums.
-     */
-    public List<PhotosFolder> getAlbums()
-    {
-        try
-        {
-            URIBuilder uriBuilder = new URIBuilder(endPoint + "/folders");
-            populateUriParameters(uriBuilder);
-            HttpGet httpGet = new HttpGet(uriBuilder.build());
-            iCloudService.populateRequestHeadersParameters(httpGet);
+	/**
+	 * Gets a list of albums.
+	 *
+	 * @return the list of albums.
+	 */
+	public List<PhotosFolder> getAlbums() {
+		try {
+			URIBuilder uriBuilder = new URIBuilder(endPoint + "/folders");
+			populateUriParameters(uriBuilder);
+			HttpGet httpGet = new HttpGet(uriBuilder.build());
+			iCloudService.populateRequestHeadersParameters(httpGet);
 
-            String rawResponse = iCloudService.getHttpClient().execute(httpGet, new StringResponseHandler());
-            PhotosAlbumsResponse photosAlbumsResponse = new Gson().fromJson(rawResponse, PhotosAlbumsResponse.class);
+			String rawResponse = iCloudService.getHttpClient().execute(httpGet, new StringResponseHandler());
+			PhotosAlbumsResponse photosAlbumsResponse = ICloudUtils.fromJson(rawResponse, PhotosAlbumsResponse.class);
 
-            return Arrays
-                .stream(photosAlbumsResponse.folders)
-                .filter(folder -> "album".equals(folder.type))
-                .collect(Collectors.toList());
-        }
-        catch (Exception e)
-        {
-            throw Throwables.propagate(e);
-        }
-    }
+			return Arrays.stream(photosAlbumsResponse.folders).filter(folder -> "album".equals(folder.type))
+				.collect(Collectors.toList());
+		} catch (Exception e) {
+			throw Throwables.propagate(e);
+		}
+	}
 }

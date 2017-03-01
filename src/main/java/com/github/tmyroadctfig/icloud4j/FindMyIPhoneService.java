@@ -34,70 +34,66 @@ import java.util.Map;
  *
  * @author Luke Quinane
  */
-public class FindMyIPhoneService
-{
-    /**
-     * The iCloud service.
-     */
-    private final ICloudService iCloudService;
+public class FindMyIPhoneService {
+	/**
+	 * The iCloud service.
+	 */
+	private final ICloudService iCloudService;
 
-    /**
-     * The service root URL.
-     */
-    private final String serviceRoot;
+	/**
+	 * The service root URL.
+	 */
+	private final String serviceRoot;
 
-    /**
-     * The service end point.
-     */
-    private final String endPoint;
+	/**
+	 * The service end point.
+	 */
+	private final String endPoint;
 
-    /**
-     * The refresh URL.
-     */
-    private final String refreshUrl;
+	/**
+	 * The refresh URL.
+	 */
+	private final String refreshUrl;
 
-    /**
-     * Creates a new 'find my iPhone' service.
-     *
-     * @param iCloudService the iCloud service.
-     */
-    public FindMyIPhoneService(ICloudService iCloudService)
-    {
-        this.iCloudService = iCloudService;
-        Map<String, Object> findMeSettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("findme");
-        serviceRoot = (String) findMeSettings.get("url");
+	/**
+	 * Creates a new 'find my iPhone' service.
+	 *
+	 * @param iCloudService the iCloud service.
+	 */
+	public FindMyIPhoneService(ICloudService iCloudService) {
+		this.iCloudService = iCloudService;
+		@SuppressWarnings("unchecked")
+		Map<String, Object> findMeSettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("findme");
+		serviceRoot = (String) findMeSettings.get("url");
 
-        endPoint = serviceRoot + "/fmipservice/client/web";
-        refreshUrl = endPoint + "/refreshClient";
-    }
+		endPoint = serviceRoot + "/fmipservice/client/web";
+		refreshUrl = endPoint + "/refreshClient";
+	}
 
-    /**
-     * Gets a list of devices.
-     *
-     * @return the list of devices.
-     */
-    public List<AppleDevice> getDevices()
-    {
-        try
-        {
-            URIBuilder uriBuilder = new URIBuilder(refreshUrl);
-            iCloudService.populateUriParameters(uriBuilder);
-            URI uri = uriBuilder.build();
+	/**
+	 * Gets a list of devices.
+	 *
+	 * @return the list of devices.
+	 */
+	@SuppressWarnings("deprecation")
+	public List<AppleDevice> getDevices() {
+		try {
+			URIBuilder uriBuilder = new URIBuilder(refreshUrl);
+			iCloudService.populateUriParameters(uriBuilder);
+			URI uri = uriBuilder.build();
 
-            String requestJson = "{\"clientContext\": {\"fmly\": true, \"shouldLocate\": true, \"selectedDevice\": \"all\"}}";
+			String requestJson = "{\"clientContext\": {\"fmly\": true, \"shouldLocate\": true, \"selectedDevice\": \"all\"}}";
 
-            HttpPost post = new HttpPost(uri);
-            post.setEntity(new StringEntity(requestJson, null, "UTF-8"));
-            iCloudService.populateRequestHeadersParameters(post);
+			HttpPost post = new HttpPost(uri);
+			post.setEntity(new StringEntity(requestJson, null, "UTF-8"));
+			iCloudService.populateRequestHeadersParameters(post);
 
-            FindMyIPhoneResponse findMyIPhoneResponse =
-                ICloudUtils.parseJsonResponse(iCloudService.getHttpClient(), post, FindMyIPhoneResponse.class);
+			FindMyIPhoneResponse findMyIPhoneResponse = ICloudUtils.parseJsonResponse(iCloudService.getHttpClient(),
+				post, FindMyIPhoneResponse.class);
 
-            return Arrays.asList(findMyIPhoneResponse.content);
-        }
-        catch (Exception e)
-        {
-            throw Throwables.propagate(e);
-        }
-    }
+			return Arrays.asList(findMyIPhoneResponse.content);
+		} catch (Exception e) {
+			throw Throwables.propagate(e);
+		}
+	}
 }

@@ -28,63 +28,57 @@ import java.util.Map;
  *
  * @author Luke Quinane
  */
-public class UbiquityService
-{
-    /**
-     * The iCloud service.
-     */
-    private final ICloudService iCloudService;
+public class UbiquityService {
+	/**
+	 * The iCloud service.
+	 */
+	private final ICloudService iCloudService;
 
-    /**
-     * The service root URL.
-     */
-    private final String serviceRoot;
+	/**
+	 * The service root URL.
+	 */
+	private final String serviceRoot;
 
-    /**
-     * Creates a new 'ubiquity' service.
-     *
-     * @param iCloudService the iCloud service.
-     */
-    public UbiquityService(ICloudService iCloudService)
-    {
-        this.iCloudService = iCloudService;
-        Map<String, Object> ubiquitySettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("ubiquity");
-        serviceRoot = (String) ubiquitySettings.get("url");
-    }
+	/**
+	 * Creates a new 'ubiquity' service.
+	 *
+	 * @param iCloudService the iCloud service.
+	 */
+	public UbiquityService(ICloudService iCloudService) {
+		this.iCloudService = iCloudService;
+		@SuppressWarnings("unchecked")
+		Map<String, Object> ubiquitySettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("ubiquity");
+		serviceRoot = (String) ubiquitySettings.get("url");
+	}
 
-    /**
-     * Gets the root node.
-     *
-     * @return the root node.
-     */
-    public UbiquityNode getRoot()
-    {
-        String rootId = "0";
+	/**
+	 * Gets the root node.
+	 *
+	 * @return the root node.
+	 */
+	public UbiquityNode getRoot() {
+		String rootId = "0";
 
-        try
-        {
-            String url = String.format("%s/ws/%s/%s/%s", serviceRoot, iCloudService.getSessionId(), "item", rootId);
-            HttpGet httpGet = new HttpGet(url);
-            iCloudService.populateRequestHeadersParameters(httpGet);
+		try {
+			String url = String.format("%s/ws/%s/%s/%s", serviceRoot, iCloudService.getSessionId(), "item", rootId);
+			HttpGet httpGet = new HttpGet(url);
+			iCloudService.populateRequestHeadersParameters(httpGet);
 
-            UbiquityNodeDetails nodeDetails =
-                ICloudUtils.parseJsonResponse(iCloudService.getHttpClient(), httpGet, UbiquityNodeDetails.class);
+			UbiquityNodeDetails nodeDetails = ICloudUtils.parseJsonResponse(iCloudService.getHttpClient(), httpGet,
+				UbiquityNodeDetails.class);
 
-            return new UbiquityNode(iCloudService, this, rootId, nodeDetails);
-        }
-        catch (Exception e)
-        {
-            throw Throwables.propagate(e);
-        }
-    }
+			return new UbiquityNode(iCloudService, this, rootId, nodeDetails);
+		} catch (Exception e) {
+			throw Throwables.propagate(e);
+		}
+	}
 
-    /**
-     * Gets the service URL.
-     *
-     * @return the service URL.
-     */
-    public String getServiceUrl()
-    {
-        return serviceRoot;
-    }
+	/**
+	 * Gets the service URL.
+	 *
+	 * @return the service URL.
+	 */
+	public String getServiceUrl() {
+		return serviceRoot;
+	}
 }

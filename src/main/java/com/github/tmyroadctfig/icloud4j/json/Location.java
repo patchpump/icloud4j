@@ -21,15 +21,14 @@ package com.github.tmyroadctfig.icloud4j.json;
  *
  * @author Luke Quinane
  */
-public class Location
-{
-    public String timeStamp;
-    public boolean isOld;
-    public boolean isInaccurate;
-    public boolean locationFinished;
-    public String positionType;
-    public double latitude;
-    public double horizontalAccuracy;
-    public String locationType;
-    public double longitude;
+public class Location {
+	public String timeStamp;
+	public boolean isOld;
+	public boolean isInaccurate;
+	public boolean locationFinished;
+	public String positionType;
+	public double latitude;
+	public double horizontalAccuracy;
+	public String locationType;
+	public double longitude;
 }

@@ -16,7 +16,6 @@
 
 package com.github.tmyroadctfig.icloud4j.util;
 
-
 import com.google.common.io.CharStreams;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -32,17 +31,15 @@ import java.nio.charset.Charset;
  *
  * @author Luke Quinane
  */
-public class StringResponseHandler implements ResponseHandler<String>
-{
-    @Override
-    public String handleResponse(HttpResponse response) throws IOException
-    {
-        HttpEntity respEntity = response.getEntity();
-        if (respEntity != null) {
-            Reader reader = new InputStreamReader(respEntity.getContent(), Charset.forName("UTF-8"));
-            return CharStreams.toString(reader);
-        }
+public class StringResponseHandler implements ResponseHandler<String> {
+	@Override
+	public String handleResponse(HttpResponse response) throws IOException {
+		HttpEntity respEntity = response.getEntity();
+		if (respEntity != null) {
+			Reader reader = new InputStreamReader(respEntity.getContent(), Charset.forName("UTF-8"));
+			return CharStreams.toString(reader);
+		}
 
-        return null;
-    }
+		return null;
+	}
 }

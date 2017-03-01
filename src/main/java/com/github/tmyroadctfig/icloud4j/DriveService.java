@@ -33,109 +33,100 @@ import java.util.stream.Stream;
  *
  * @author Luke Quinanne
  */
-public class DriveService
-{
-    /**
-     * The iCloud service.
-     */
-    private final ICloudService iCloudService;
+public class DriveService {
+	/**
+	 * The iCloud service.
+	 */
+	private final ICloudService iCloudService;
 
-    /**
-     * The service root URL.
-     */
-    private final String serviceRoot;
+	/**
+	 * The service root URL.
+	 */
+	private final String serviceRoot;
 
-    /**
-     * The 'docs' service URL.
-     */
-    private final String docsServiceRoot;
+	/**
+	 * The 'docs' service URL.
+	 */
+	private final String docsServiceRoot;
 
-    /**
-     * Creates a new drive service.
-     *
-     * @param iCloudService the iCloud service.
-     */
-    public DriveService(ICloudService iCloudService)
-    {
-        this.iCloudService = iCloudService;
-        Map<String, Object> driveSettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("drivews");
-        serviceRoot = (String) driveSettings.get("url");
+	/**
+	 * Creates a new drive service.
+	 *
+	 * @param iCloudService the iCloud service.
+	 */
+	public DriveService(ICloudService iCloudService) {
+		this.iCloudService = iCloudService;
+		@SuppressWarnings("unchecked")
+		Map<String, Object> driveSettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("drivews");
+		serviceRoot = (String) driveSettings.get("url");
 
-        Map<String, Object> docsSettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("docws");
-        docsServiceRoot = (String) docsSettings.get("url");
-    }
+		@SuppressWarnings("unchecked")
+		Map<String, Object> docsSettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("docws");
+		docsServiceRoot = (String) docsSettings.get("url");
+	}
 
-    /**
-     * Gets the root node.
-     *
-     * @return the root node.
-     */
-    public DriveNode getRoot()
-    {
-        String rootId = "FOLDER::com.apple.CloudDocs::root";
-        return new DriveNode(iCloudService, this, rootId, getNodeDetails(rootId));
-    }
+	/**
+	 * Gets the root node.
+	 *
+	 * @return the root node.
+	 */
+	public DriveNode getRoot() {
+		String rootId = "FOLDER::com.apple.CloudDocs::root";
+		return new DriveNode(iCloudService, this, rootId, getNodeDetails(rootId));
+	}
 
-    /**
-     * Gets the node details.
-     *
-     * @param nodeId the node ID.
-     * @return the node details.
-     */
-    public DriveNodeDetails getNodeDetails(String nodeId)
-    {
-        try
-        {
-            HttpPost post = new HttpPost(serviceRoot + "/retrieveItemDetailsInFolders");
-            iCloudService.populateRequestHeadersParameters(post);
-            post.addHeader("clientMasteringNumber", "14E45");
-            post.setEntity(new StringEntity(String.format("[{\"drivewsid\":\"%s\",\"partialData\":false}]", nodeId), "UTF-8"));
+	/**
+	 * Gets the node details.
+	 *
+	 * @param nodeId the node ID.
+	 * @return the node details.
+	 */
+	public DriveNodeDetails getNodeDetails(String nodeId) {
+		try {
+			HttpPost post = new HttpPost(serviceRoot + "/retrieveItemDetailsInFolders");
+			iCloudService.populateRequestHeadersParameters(post);
+			post.addHeader("clientMasteringNumber", "14E45");
+			post.setEntity(
+				new StringEntity(String.format("[{\"drivewsid\":\"%s\",\"partialData\":false}]", nodeId), "UTF-8"));
 
-            return ICloudUtils.parseJsonResponse(iCloudService.getHttpClient(), post, DriveNodeDetails[].class)[0];
-        }
-        catch (Exception e)
-        {
-            throw Throwables.propagate(e);
-        }
-    }
+			return ICloudUtils.parseJsonResponse(iCloudService.getHttpClient(), post, DriveNodeDetails[].class)[0];
+		} catch (Exception e) {
+			throw Throwables.propagate(e);
+		}
+	}
 
-    /**
-     * Gets the list of children for a given parent ID.
-     *
-     * @param parentId the ID to look up the children for.
-     * @return the list of children.
-     */
-    public List<DriveNode> getChildren(String parentId)
-    {
-        DriveNodeDetails nodeDetails = getNodeDetails(parentId);
-        if (nodeDetails.items == null)
-        {
-            return Collections.emptyList();
-        }
+	/**
+	 * Gets the list of children for a given parent ID.
+	 *
+	 * @param parentId the ID to look up the children for.
+	 * @return the list of children.
+	 */
+	public List<DriveNode> getChildren(String parentId) {
+		DriveNodeDetails nodeDetails = getNodeDetails(parentId);
+		if (nodeDetails.items == null) {
+			return Collections.emptyList();
+		}
 
-        return Stream
-            .of(nodeDetails.items)
-            .map(childDetails -> new DriveNode(iCloudService, this, childDetails.drivewsid, childDetails))
-            .collect(Collectors.toList());
-    }
+		return Stream.of(nodeDetails.items)
+			.map(childDetails -> new DriveNode(iCloudService, this, childDetails.drivewsid, childDetails))
+			.collect(Collectors.toList());
+	}
 
-    /**
-     * Gets the service URL.
-     *
-     * @return the service URL.
-     */
-    public String getServiceUrl()
-    {
-        return serviceRoot;
-    }
+	/**
+	 * Gets the service URL.
+	 *
+	 * @return the service URL.
+	 */
+	public String getServiceUrl() {
+		return serviceRoot;
+	}
 
-    /**
-     * Gets the Docs service root URL.
-     *
-     * @return the service URL.
-     */
-    public String getDocsServiceUrl()
-    {
-        return docsServiceRoot;
-    }
+	/**
+	 * Gets the Docs service root URL.
+	 *
+	 * @return the service URL.
+	 */
+	public String getDocsServiceUrl() {
+		return docsServiceRoot;
+	}
 }

@@ -21,15 +21,14 @@ package com.github.tmyroadctfig.icloud4j.json;
  *
  * @author Luke Quinane
  */
-public class UbiquityNodeDetails
-{
-    public long peer_id;
-    public boolean in_cloud;
-    public String item_id;
-    public String name;
-    public String parent_item_id;
-    public String type;
-    public String modified;
-    public long size;
-    public String change_id;
+public class UbiquityNodeDetails {
+	public long peer_id;
+	public boolean in_cloud;
+	public String item_id;
+	public String name;
+	public String parent_item_id;
+	public String type;
+	public String modified;
+	public long size;
+	public String change_id;
 }
