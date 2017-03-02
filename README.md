@@ -6,45 +6,45 @@ It is licenced under the Apache 2.0 licence.
 When the account isn't protected using two-factor authentication, authentication can be down by supplying a simple
 username/password pair:
 
-    ICloudService iCloud = new ICloudService("client-id");
-    iCloud.authenticate("user@example.com", "password".toCharArray());
+	ICloudService iCloud = new ICloudService("client-id");
+	iCloud.authenticate("user@example.com", "password".toCharArray());
 
 #Persistent sessions
 
 An authenticated session can be serialized, stored and re-used. Authenticate requesting an
 extendedLogin session and serialize/store the ICloudSession:
 
-    ICloudService iCloud = new ICloudService("client-id");
-    iCloud.authenticate("user@example.com", "password".toCharArray(), true);
-	 ICloudSession session = iCloud.getSession();
+	ICloudService iCloud = new ICloudService("client-id");
+	iCloud.authenticate("user@example.com", "password".toCharArray(), true);
+	ICloudSession session = iCloud.getSession();
 
 Later the same session can be loaded and re-used without password authentication:
 
-    ICloudService iCloud = new ICloudService(session);
+	ICloudService iCloud = new ICloudService(session);
 
 #Devices
 
 A list of devices linked to the iCloud account can be retrieved via the 'FindMyIPhoneService':
 
-    FindMyIPhoneService findMyIPhoneService = new FindMyIPhoneService(iCloudService);
-    List<AppleDevice> devices = findMyIPhoneService.getDevices();
+	FindMyIPhoneService findMyIPhoneService = new FindMyIPhoneService(iCloudService);
+	List<AppleDevice> devices = findMyIPhoneService.getDevices();
 
 #Ubiquity (File Storage)
 
 The iCloud Ubiquity file storage can be browsed by creating a new instance of the 'UbiquityService', and then calling
 methods on each node from there:
 
-    UbiquityService ubiquityService = new UbiquityService(iCloudService);
-    UbiquityNode rootNode = ubiquityService.getRoot();
-    List<UbiquityNode> childrenNode = root.getChildren();
+	UbiquityService ubiquityService = new UbiquityService(iCloudService);
+	UbiquityNode rootNode = ubiquityService.getRoot();
+	List<UbiquityNode> childrenNode = root.getChildren();
 
 File data can be streamed into an output stream:
 
-    OutputStream outputStream;
-    UbiquityNode child = folder.getChildren().get(0);
-    if ("file".equals(child.getType()) {
-        child.downloadFileData(outputStream);
-    }
+	OutputStream outputStream;
+	UbiquityNode child = folder.getChildren().get(0);
+	if ("file".equals(child.getType()) {
+		child.downloadFileData(outputStream);
+	}
 
 #Drive (iCloud Drive)
 
@@ -53,7 +53,7 @@ The iCloud Drive contents can be browsed like so:
 	DriveService driveService = new DriveService(iCloud);
 	DriveNode root = driveService.getRoot();
 	for(DriveNode node : root.getChildren()) {
-	    ...
+		...
 	}
 
 #CKDatabase (CloudKit database)
