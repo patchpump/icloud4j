@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
+import com.github.tmyroadctfig.icloud4j.util.ICloudUtils;
 
 /**
  * CKDatabase record.
@@ -52,7 +53,7 @@ public class CKRecord {
 	public String getString(String key) {
 		return getString(key, "");
 	}
-	
+
 	public Long getLong(String key) {
 		return getLong(key, 0L);
 	}
@@ -61,11 +62,11 @@ public class CKRecord {
 
 		if(fields == null)
 			return defaultValue;
-		
+
 		CKRecordFieldValue v = fields.get(key);
 		if(v == null || v.value == null)
 			return defaultValue;
-		
+
 		try {
 			if("STRING".equals(v.type))
 				return (String)v.value;
@@ -78,16 +79,16 @@ public class CKRecord {
 
 		return defaultValue;
 	}
-	
+
 	public Long getLong(String key, Long defaultValue) {
 
 		if(fields == null)
 			return defaultValue;
-		
+
 		CKRecordFieldValue v = fields.get(key);
 		if(v == null || v.value == null)
 			return defaultValue;
-		
+
 		if("TIMESTAMP".equals(v.type) || "INT64".equals(v.type))
 			return ((Double)v.value).longValue();
 		else if("STRING".equals(v.type))
@@ -96,14 +97,26 @@ public class CKRecord {
 		return defaultValue;
 	}
 
+	public Map<String,Object> getMap(String key) {
+
+		if(fields == null)
+			return null;
+
+		CKRecordFieldValue v = fields.get(key);
+		if(v == null || v.value == null || !(v.value instanceof Map))
+			return null;
+
+		return ICloudUtils.stringifyMap(v.value);
+	}
+
 	public byte[] getBytes(String key) {
 		if(fields == null)
 			return new byte[0];
-		
+
 		CKRecordFieldValue v = fields.get(key);
 		if(v == null || v.value == null || !"ENCRYPTED_BYTES".equals(v.type))
 			return new byte[0];
-		
+
 		return Base64.decodeBase64((String)v.value);
 	}
 
@@ -113,7 +126,7 @@ public class CKRecord {
 			+ ", modified=" + modified + ", recordChangeTag=" + recordChangeTag + ", zoneID=" + zoneID + ", fields="
 			+ fields + "]";
 	}
-	
+
 	public static class CKRecordFieldValue {
 
 		public Object value;

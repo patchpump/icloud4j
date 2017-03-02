@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
 
+import com.github.tmyroadctfig.icloud4j.json.SerializableCookieStore;
 import com.github.tmyroadctfig.icloud4j.util.ICloudUtils;
 
 /**
@@ -20,7 +20,7 @@ public class ICloudSession implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private final BasicCookieStore cookieStore = new BasicCookieStore();
+	private SerializableCookieStore cookieStore = new SerializableCookieStore();
 	private String clientId;
 	private String dsid;
 	private long createdAt;
@@ -35,7 +35,7 @@ public class ICloudSession implements Serializable {
 	public ICloudSession(String clientId) {
 		this.clientId = clientId;
 	}
-	
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -51,7 +51,7 @@ public class ICloudSession implements Serializable {
 	public Long getCreatedAt() {
 		return createdAt;
 	}
-	
+
 	public String getClientId() {
 		return clientId;
 	}
@@ -63,7 +63,7 @@ public class ICloudSession implements Serializable {
 	public boolean isExtendedLogin() {
 		return extendedLogin;
 	}
-	
+
 	public void setLoginInfo(Map<String, Object> loginInfo, boolean extendedLogin) {
 
 		this.createdAt = System.currentTimeMillis();
@@ -80,7 +80,7 @@ public class ICloudSession implements Serializable {
 		dsid = (String)dsInfoMap.get("dsid");
 		hsaChallengeRequired = Boolean.TRUE.equals(loginInfo.get("hsaChallengeRequired"));
 	}
-	
+
 	public boolean isHsaChallengeRequired() {
 		return hsaChallengeRequired;
 	}
@@ -96,9 +96,9 @@ public class ICloudSession implements Serializable {
 	private long getMaxSessionAge() {
 		return extendedLogin ? MAX_EXTENDED_SESSION_AGE : MAX_DEFAULT_SESSION_AGE;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "ICloudSession [clientId=" + clientId + ", dsid=" + dsid + ", createdAt=" + createdAt + "]";
+		return "ICloudSession [clientId=" + clientId + ", dsid=" + dsid + ", createdAt=" + createdAt + ", cookies=" + cookieStore + "]";
 	}
 }

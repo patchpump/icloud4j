@@ -17,7 +17,7 @@
 package com.github.tmyroadctfig.icloud4j.util;
 
 import com.github.tmyroadctfig.icloud4j.ICloudException;
-import com.github.tmyroadctfig.icloud4j.json.SerializableBasicClientCookie;
+import com.github.tmyroadctfig.icloud4j.json.SerializableClientCookie;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
@@ -30,6 +30,7 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -97,11 +98,19 @@ public class ICloudUtils {
 			throw new UncheckedIOException(e);
 		}
 	}
-	
+
 	public static String toJson(Object o) {
 		return gson.toJson(o);
 	}
-	
+
+	public static void toJson(Object o, Appendable writer) {
+		gson.toJson(o, writer);
+	}
+
+	public static <T> T fromJson(Reader s, Class<?> type) {
+		return gson.<T> fromJson(s, type);
+	}
+
 	public static <T> T fromJson(String s, Class<?> type) {
 		return gson.<T> fromJson(s, type);
 	}
@@ -135,7 +144,7 @@ public class ICloudUtils {
 
 		@Override
 		public Cookie createInstance(Type type) {
-			return new SerializableBasicClientCookie();	
+			return new SerializableClientCookie();	
 		}
 	}
 }
