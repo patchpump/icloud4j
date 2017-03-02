@@ -97,10 +97,10 @@ public class IdmsaService {
 	 * @return the status line.
 	 */
 	@SuppressWarnings("deprecation")
-	public StatusLine authenticateViaIdmsa(String username, char[] password) {
+	public StatusLine authenticateViaIdmsa(String username, char[] password, boolean extendedLogin) {
 		try {
 			Map<String, Object> params = ImmutableMap.of("accountName", username, "password", new String(password),
-				"rememberMe", false, "trustTokens", new String[0]);
+				"rememberMe", extendedLogin, "trustTokens", new String[0]);
 
 			HttpPost post = new HttpPost(idmsaAuthEndPoint + "/signin");
 			post.setEntity(new StringEntity(ICloudUtils.toJson(params), "application/json", Consts.UTF_8.name()));
@@ -205,8 +205,7 @@ public class IdmsaService {
 	public void populateIdmsaRequestHeadersParameters(HttpRequestBase request) {
 		request.setHeader("Origin", idmsaEndPoint);
 		request.setHeader("Referer", idmsaEndPoint + "/");
-		request.setHeader("User-Agent",
-			"Mozilla/5.0 (iPad; CPU OS 9_3_4 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13G35 Safari/601.1");
+		request.setHeader("User-Agent", "Mozilla/5.0 (iPad; CPU OS 9_3_4 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13G35 Safari/601.1");
 
 		// Seems to be required to get a session token
 		request.setHeader("X-Apple-Widget-Key", "83545bf919730e51dbfba24e7e8a78d2");
