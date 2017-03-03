@@ -20,6 +20,6 @@ public class CKZoneId {
 	
 	@Override
 	public String toString() {
-		return "CKDatabaseZoneId [zoneName=" + zoneName + ", ownerRecordName=" + ownerRecordName + "]";
+		return "[CKZoneId:" + zoneName + "]";
 	}
 }

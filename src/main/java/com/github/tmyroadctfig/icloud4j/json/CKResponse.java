@@ -21,6 +21,6 @@ public class CKResponse {
 
 	@Override
 	public String toString() {
-		return "CKDatabaseResponse [records=" + records + "]";
+		return "[CKResponse:" + records + "]";
 	}
 }

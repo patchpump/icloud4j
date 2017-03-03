@@ -109,6 +109,19 @@ public class CKRecord {
 		return ICloudUtils.stringifyMap(v.value);
 	}
 
+	@SuppressWarnings("unchecked")
+	public String getReference(String key) {
+
+		if(fields == null)
+			return null;
+
+		CKRecordFieldValue v = fields.get(key);
+		if(v == null || v.value == null || ! "REFERENCE".equals(v.type) || !(v.value instanceof Map))
+			return null;
+
+		return (String)((Map<String,Object>)v.value).get("recordName");
+	}
+
 	public byte[] getBytes(String key) {
 		if(fields == null)
 			return new byte[0];
@@ -122,14 +135,17 @@ public class CKRecord {
 
 	@Override
 	public String toString() {
-		return "CKDatabaseRecord [recordName=" + recordName + ", recordType=" + recordType + ", created=" + created
-			+ ", modified=" + modified + ", recordChangeTag=" + recordChangeTag + ", zoneID=" + zoneID + ", fields="
-			+ fields + "]";
+		return "[CKDatabaseRecord:" + recordName + ":" + recordType + ":" + modified + ":" + fields + "]";
 	}
 
 	public static class CKRecordFieldValue {
 
-		public Object value;
 		public String type;
+		public Object value;
+
+		@Override
+		public String toString() {
+			return "[CKRecordFieldValue:" + type + ":" + value + "]";
+		}
 	}
 }

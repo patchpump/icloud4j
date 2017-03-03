@@ -25,7 +25,6 @@ public class CKTimestamp {
 
 	@Override
 	public String toString() {
-		return "CKDatabaseTimestamp [timestamp=" + timestamp + ", userRecordName=" + userRecordName + ", deviceID="
-			+ deviceID + "]";
+		return "[CKTimestamp:" + timestamp + "]";
 	}
 }
