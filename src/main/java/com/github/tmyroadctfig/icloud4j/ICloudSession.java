@@ -28,7 +28,8 @@ public class ICloudSession implements Serializable {
 	private Map<String, Object> webServiceMap;
 	private boolean hsaChallengeRequired;
 	private boolean extendedLogin;
-
+	private String userAgent = "Opera/9.52 (X11; Linux i686; U; en)";
+	
 	public ICloudSession() {
 	}
 
@@ -36,8 +37,12 @@ public class ICloudSession implements Serializable {
 		this.clientId = clientId;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public String getUserAgent() {
+		return userAgent;
+	}
+
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
 	}
 
 	public CookieStore getCookieStore() {

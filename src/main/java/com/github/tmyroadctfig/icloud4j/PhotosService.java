@@ -67,9 +67,7 @@ public class PhotosService {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> photosSettings = (Map<String, Object>) iCloudService.getWebServicesMap().get("photos");
 		serviceRoot = (String) photosSettings.get("url");
-
 		endPoint = serviceRoot + "/ph";
-
 		syncToken = getSyncToken();
 	}
 

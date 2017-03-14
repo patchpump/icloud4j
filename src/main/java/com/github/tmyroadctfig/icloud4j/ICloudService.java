@@ -46,52 +46,57 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The iCloud service.
+ * iCloud service.
  *
  * @author Luke Quinane
  */
 public class ICloudService implements java.io.Closeable {
+
 	/**
 	 * A flag indicating whether to disable SSL checks.
 	 */
-	private static final boolean DISABLE_SSL_CHECKS = Boolean
-		.parseBoolean(System.getProperty("tmyroadctfig.icloud4j.disableSslChecks", "false"));
+	private static final boolean DISABLE_SSL_CHECKS = Boolean.parseBoolean(System.getProperty("tmyroadctfig.icloud4j.disableSslChecks", "false"));
 
 	/**
-	 * The proxy host to use.
+	 * Proxy host to use.
 	 */
 	private static final String PROXY_HOST = System.getProperty("http.proxyHost");
 
 	/**
-	 * The proxy port to use.
+	 * Proxy port to use.
 	 */
 	private static final Integer PROXY_PORT = Integer.getInteger("http.proxyPort");
 
 	/**
-	 * The end point.
+	 * End point.
 	 */
 	public static final String endPoint = "https://www.icloud.com";
 
 	/**
-	 * The setup end point.
+	 * Setup end point.
 	 */
 	public static final String setupEndPoint = "https://setup.icloud.com/setup/ws/1";
 
 	/**
-	 * The HTTP client.
+	 * HTTP client.
 	 */
 	private final CloseableHttpClient httpClient;
 
 	/**
-	 * The idmsa service.
+	 * idmsa service.
 	 */
 	private final IdmsaService idmsaService;
 
 	/**
-	 * The iCloud session.
+	 * iCloud session.
 	 */
 	private final ICloudSession session;
 
+	/**
+	 * Client build number.
+	 */
+	private String clientBuildNumber = "14E45";
+	
 	/**
 	 * Creates a new iCloud service instance
 	 *
@@ -117,10 +122,13 @@ public class ICloudService implements java.io.Closeable {
 			}
 
 			if (DISABLE_SSL_CHECKS) {
-				clientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).setSslcontext(new SSLContextBuilder().loadTrustMaterial(null, (x509CertChain, authType) -> true).build());
+				clientBuilder
+					.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+					.setSslcontext(new SSLContextBuilder().loadTrustMaterial(null, (x509CertChain, authType) -> true).build());
 			}
 
 			httpClient = clientBuilder.build();
+
 		} catch (Exception e) {
 			throw Throwables.propagate(e);
 		}
@@ -359,13 +367,25 @@ public class ICloudService implements java.io.Closeable {
 		return idmsaService;
 	}
 
+	public ICloudSession getSession() {
+		return session;
+	}
+
+	public String getClientBuildNumber() {
+		return clientBuildNumber;
+	}
+
+	public void setClientBuildNumber(String clientBuildNumber) {
+		this.clientBuildNumber = clientBuildNumber;
+	}
+
 	/**
 	 * Populates the URI parameters for a request.
 	 *
 	 * @param uriBuilder the URI builder.
 	 */
 	public void populateUriParameters(URIBuilder uriBuilder) {
-		uriBuilder.addParameter("clientId", getClientId()).addParameter("clientBuildNumber", "14E45");
+		uriBuilder.addParameter("clientId", getClientId()).addParameter("clientBuildNumber", clientBuildNumber);
 
 		String dsid = getSessionId();
 		if (!Strings.isNullOrEmpty(dsid)) {
@@ -390,15 +410,11 @@ public class ICloudService implements java.io.Closeable {
 	public void populateRequestHeadersParameters(HttpRequestBase request) {
 		request.setHeader("Origin", endPoint);
 		request.setHeader("Referer", endPoint + "/");
-		request.setHeader("User-Agent", "Opera/9.52 (X11; Linux i686; U; en)");
+		request.setHeader("User-Agent", session.getUserAgent());
 	}
 
 	@Override
 	public void close() throws IOException {
 		httpClient.close();
-	}
-
-	public ICloudSession getSession() {
-		return session;
 	}
 }
